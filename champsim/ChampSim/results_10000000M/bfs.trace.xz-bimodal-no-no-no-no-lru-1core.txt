@@ -1,0 +1,66 @@
+
+*** ChampSim Multicore Out-of-Order Simulator ***
+
+Warmup Instructions: 10000000000000
+Simulation Instructions: 10000000000000
+Number of CPUs: 1
+LLC sets: 2048
+LLC ways: 16
+Off-chip DRAM Size: 4096 MB Channels: 1 Width: 64-bit Data Rate: 3200 MT/s
+
+CPU 0 runs ../traces//bfs.trace.xz
+CPU 0 Bimodal branch predictor
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+Heartbeat CPU 0 instructions: 10000000 cycles: 4178479 heartbeat IPC: 2.39322 cumulative IPC: 2.39322 (Simulation time: 0 hr 0 min 31 sec) 
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+Heartbeat CPU 0 instructions: 20000000 cycles: 8357395 heartbeat IPC: 2.39297 cumulative IPC: 2.39309 (Simulation time: 0 hr 1 min 3 sec) 
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+Heartbeat CPU 0 instructions: 30000000 cycles: 12536320 heartbeat IPC: 2.39296 cumulative IPC: 2.39305 (Simulation time: 0 hr 1 min 35 sec) 
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+Heartbeat CPU 0 instructions: 40000000 cycles: 16714725 heartbeat IPC: 2.39326 cumulative IPC: 2.3931 (Simulation time: 0 hr 2 min 6 sec) 
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+Caught signal: 2
