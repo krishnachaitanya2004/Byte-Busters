@@ -1,0 +1,94 @@
+
+*** ChampSim Multicore Out-of-Order Simulator ***
+
+Warmup Instructions: 10000000
+Simulation Instructions: 10000000
+Number of CPUs: 1
+LLC sets: 2048
+LLC ways: 16
+Off-chip DRAM Size: 4096 MB Channels: 1 Width: 64-bit Data Rate: 3200 MT/s
+
+CPU 0 runs ../traces//bfs.trace.xz
+CPU 0 Bimodal branch predictor
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+Heartbeat CPU 0 instructions: 10000000 cycles: 4178479 heartbeat IPC: 2.39322 cumulative IPC: 2.39322 (Simulation time: 0 hr 0 min 34 sec) 
+
+Warmup complete CPU 0 instructions: 10000004 cycles: 4178480 (Simulation time: 0 hr 0 min 34 sec) 
+
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+*** Reached end of trace for Core: 0 Repeating trace: ../traces//bfs.trace.xz
+Heartbeat CPU 0 instructions: 20000001 cycles: 12946304 heartbeat IPC: 1.14053 cumulative IPC: 1.14053 (Simulation time: 0 hr 1 min 2 sec) 
+Finished CPU 0 instructions: 10000000 cycles: 8767844 cumulative IPC: 1.14053 (Simulation time: 0 hr 1 min 2 sec) 
+
+ChampSim completed all CPUs
+
+Region of Interest Statistics
+
+CPU 0 cumulative IPC: 1.14053 instructions: 10000000 cycles: 8767844
+L1D TOTAL     ACCESS:    2426136  HIT:    2355420  MISS:      70716
+L1D LOAD      ACCESS:    1510796  HIT:    1456190  MISS:      54606
+L1D RFO       ACCESS:     915340  HIT:     899230  MISS:      16110
+L1D PREFETCH  ACCESS:          0  HIT:          0  MISS:          0
+L1D WRITEBACK ACCESS:          0  HIT:          0  MISS:          0
+L1D PREFETCH  REQUESTED:          0  ISSUED:          0  USEFUL:          0  USELESS:          0
+L1D AVERAGE MISS LATENCY: 18.7753 cycles
+L1I TOTAL     ACCESS:    1715925  HIT:    1707289  MISS:       8636
+L1I LOAD      ACCESS:    1715925  HIT:    1707289  MISS:       8636
+L1I RFO       ACCESS:          0  HIT:          0  MISS:          0
+L1I PREFETCH  ACCESS:          0  HIT:          0  MISS:          0
+L1I WRITEBACK ACCESS:          0  HIT:          0  MISS:          0
+L1I PREFETCH  REQUESTED:          0  ISSUED:          0  USEFUL:          0  USELESS:          0
+L1I AVERAGE MISS LATENCY: 21.4467 cycles
+L2C TOTAL     ACCESS:      96730  HIT:      85791  MISS:      10939
+L2C LOAD      ACCESS:      63242  HIT:      53623  MISS:       9619
+L2C RFO       ACCESS:      16109  HIT:      14799  MISS:       1310
+L2C PREFETCH  ACCESS:          0  HIT:          0  MISS:          0
+L2C WRITEBACK ACCESS:      17379  HIT:      17369  MISS:         10
+L2C PREFETCH  REQUESTED:          0  ISSUED:          0  USEFUL:          0  USELESS:          0
+L2C AVERAGE MISS LATENCY: 29.9726 cycles
+LLC TOTAL     ACCESS:      12478  HIT:      12478  MISS:          0
+LLC LOAD      ACCESS:       9619  HIT:       9619  MISS:          0
+LLC RFO       ACCESS:       1310  HIT:       1310  MISS:          0
+LLC PREFETCH  ACCESS:          0  HIT:          0  MISS:          0
+LLC WRITEBACK ACCESS:       1549  HIT:       1549  MISS:          0
+LLC PREFETCH  REQUESTED:          0  ISSUED:          0  USEFUL:          0  USELESS:          0
+LLC AVERAGE MISS LATENCY: -nan cycles
+Major fault: 0 Minor fault: 243
+
+DRAM Statistics
+ CHANNEL 0
+ RQ ROW_BUFFER_HIT:          0  ROW_BUFFER_MISS:          0
+ DBUS_CONGESTED:          0
+ WQ ROW_BUFFER_HIT:          0  ROW_BUFFER_MISS:          0  FULL:          0
+
+ AVG_CONGESTED_CYCLE: -
+
+CPU 0 Branch Prediction Accuracy: 96.3278% MPKI: 5.907 Average ROB Occupancy at Mispredict: 52.8189
+
+Branch types
+NOT_BRANCH: 8391078 83.9108%
+BRANCH_DIRECT_JUMP: 71947 0.71947%
+BRANCH_INDIRECT: 22220 0.2222%
+BRANCH_CONDITIONAL: 1410332 14.1033%
+BRANCH_DIRECT_CALL: 51340 0.5134%
+BRANCH_INDIRECT_CALL: 720 0.0072%
+BRANCH_RETURN: 52010 0.5201%
+BRANCH_OTHER: 0 0%
+
