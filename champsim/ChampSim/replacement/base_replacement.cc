@@ -15,6 +15,44 @@ void CACHE::update_replacement_state(uint32_t cpu, uint32_t set, uint32_t way, u
 
     return lru_update(set, way);
 }
+uint32_t CACHE::fifo_victim(uint32_t cpu, uint64_t instr_id, uint32_t set, const BLOCK *current_set, uint64_t ip, uint64_t full_addr, uint32_t type)
+{
+    uint32_t way = 0;
+
+    bool found = false;
+    for (uint32_t i = 0; i < fifo_queue.size(); i++)
+    {
+        if (block[set][fifo_queue[i]].valid == false && !found)
+        {
+            std::vector<uint32_t>::iterator it = fifo_queue.begin() + i;
+            uint32_t index = std::distance(fifo_queue.begin(), it);
+            fifo_queue.erase(fifo_queue.begin() + index);
+            found = true;
+            way = i;
+
+            DP(if (warmup_complete[cpu]) {
+            cout << "[" << NAME << "] " << __func__ << " instr_id: " << instr_id << " invalid set: " << set << " way: " << way;
+            cout << hex << " address: " << (full_addr>>LOG2_BLOCK_SIZE) << " victim address: " << block[set][way].address << " data: " << block[set][way].data;
+            cout << dec << " fifo front: " << fifo_queue.front() << endl; });
+        }
+    }
+    if (fifo_queue.size() < NUM_WAY && found)
+    {
+        fifo_queue.push_back(way);
+    }
+
+    // if no invalid cache line was found
+    if (way == NUM_WAY)
+    {
+        // pick the one on the front of fifo
+        way = fifo_queue.front();
+        fifo_queue.erase(fifo_queue.begin());
+        // put it in the end as this will be filled right now
+        fifo_queue.push_back(way);
+    }
+
+    return way;
+}
 
 uint32_t CACHE::lru_victim(uint32_t cpu, uint64_t instr_id, uint32_t set, const BLOCK *current_set, uint64_t ip, uint64_t full_addr, uint32_t type)
 {
