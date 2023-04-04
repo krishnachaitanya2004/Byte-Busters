@@ -1,0 +1,80 @@
+#include "cache.h"
+
+const int R_MAX = 100;
+const int SCORE_MAX = 31;
+int O = 0;
+vector<uint64_t> RR;
+const int maxsize = 64;
+int r_count = 0;
+int offsets[26] = {1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 16, 18, 20, 24, 25, 27, 30, 32, 36, 40, 45, 48, 50, 54, 60};
+int scores[26] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+int i_count = 0;
+
+void CACHE::l2c_prefetcher_initialize()
+{
+}
+
+uint32_t CACHE::l2c_prefetcher_operate(uint64_t addr, uint64_t ip, uint8_t cache_hit, uint8_t type, uint32_t metadata_in)
+{
+  if (type != LOAD)
+    return metadata_in;
+
+  // SCORE_MAX, ROUND_MAX, i_count, r_count check
+  // 0) Update r_count after a round
+  if (i_count == 26)
+  {
+    i_count = 0;
+    r_count++;
+  }
+  // 1) Reset after a learning phase
+  if (r_count == R_MAX || *max_element(scores, scores + 26) >= SCORE_MAX)
+  {
+    r_count = 0;
+    O = distance(scores, max_element(scores, scores + 26));
+    for (int i = 0; i < 26; i++)
+    {
+      scores[i] = 0;
+    }
+  }
+
+  // Adding address into Recent Request Table
+  if (RR.size() < maxsize)
+  {
+    RR.push_back(addr);
+  }
+  else
+  {
+    RR.erase(RR.begin());
+    RR.push_back(addr);
+  }
+
+  // Finding address - offset in RR
+  uint64_t ff_addr = ((addr >> LOG2_BLOCK_SIZE) - offsets[i_count]) << LOG2_BLOCK_SIZE;
+  vector<uint64_t>::iterator it = std::find(RR.begin(), RR.end(), ff_addr);
+  if (it != RR.end())
+  {
+    scores[i_count]++;
+  }
+
+  uint64_t pf_addr = ((addr >> LOG2_BLOCK_SIZE) + offsets[O]) << LOG2_BLOCK_SIZE;
+
+  DP(if (warmup_complete[cpu]) {
+    cout << "[" << NAME << "] " << __func__ << hex << " base_cl: " << (addr >> LOG2_BLOCK_SIZE);
+    cout << " pf_cl: " << (pf_addr >> LOG2_BLOCK_SIZE) << " ip: " << ip << " cache_hit: " << +cache_hit
+         << " type: " << +type << endl;
+  });
+
+  prefetch_line(ip, addr, pf_addr, FILL_L2, 0);
+  i_count++;
+
+  return metadata_in;
+}
+
+uint32_t CACHE::l2c_prefetcher_cache_fill(uint64_t addr, uint32_t set, uint32_t way, uint8_t prefetch, uint64_t evicted_addr, uint32_t metadata_in)
+{
+  return metadata_in;
+}
+
+void CACHE::l2c_prefetcher_final_stats()
+{
+}
