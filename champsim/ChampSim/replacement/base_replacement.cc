@@ -67,6 +67,23 @@ void CACHE::lru_update(uint32_t set, uint32_t way)
     block[set][way].lru = 0; // promote to the MRU position
 }
 
+uint32_t CACHE::lfu_victim(uint32_t set)
+{
+    uint32_t minimum = UINT_MAX;
+    int a = 0;
+    for (int i = 0; i < LLC_WAY; i++)
+    {
+        minimum = min(reference[set][i], minimum);
+        if (minimum == reference[set][i])
+        {
+            a = i;
+        }
+    }
+
+    return a;
+}
+
+
 void CACHE::replacement_final_stats()
 {
 
