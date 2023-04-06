@@ -18,36 +18,45 @@ void CACHE::update_replacement_state(uint32_t cpu, uint32_t set, uint32_t way, u
 uint32_t CACHE::fifo_victim(uint32_t cpu, uint64_t instr_id, uint32_t set, const BLOCK *current_set, uint64_t ip, uint64_t full_addr, uint32_t type)
 {
     uint32_t way = 0;
-
-    bool found = false;
-    for (uint32_t i = 0; i < fifo_queue.size(); i++)
+    for (way = 0; way < NUM_WAY; way++)
     {
-        if (block[set][fifo_queue[i]].valid == false && !found)
+        if (block[set][way].valid == false)
         {
-            std::vector<uint32_t>::iterator it = fifo_queue.begin() + i;
-            uint32_t index = std::distance(fifo_queue.begin(), it);
-            fifo_queue.erase(fifo_queue.begin() + index);
-            found = true;
-            way = i;
+            // std::vector<uint32_t>::iterator it = std::find(fifo_queue.begin(), fifo_queue.end(), way);
+            bool found = false;
+            int it = 0;
+            for (int i = 0; i < fifo_queue.size(); i++)
+            {
+                if (fifo_queue[i] == way)
+                {
+                    found = true;
+                    it = i;
+                }
+            }
+
+            if (found)
+            {
+                int index = it;
+                fifo_queue.erase(fifo_queue.begin() + index);
+            }
+            if (fifo_queue.size() < NUM_WAY)
+            {
+                fifo_queue.push_back(way);
+            }
 
             DP(if (warmup_complete[cpu]) {
             cout << "[" << NAME << "] " << __func__ << " instr_id: " << instr_id << " invalid set: " << set << " way: " << way;
             cout << hex << " address: " << (full_addr>>LOG2_BLOCK_SIZE) << " victim address: " << block[set][way].address << " data: " << block[set][way].data;
             cout << dec << " fifo front: " << fifo_queue.front() << endl; });
+
+            break;
         }
     }
-    if (fifo_queue.size() < NUM_WAY && found)
-    {
-        fifo_queue.push_back(way);
-    }
 
-    // if no invalid cache line was found
     if (way == NUM_WAY)
     {
-        // pick the one on the front of fifo
-        way = fifo_queue.front();
+        way = fifo_queue[0];
         fifo_queue.erase(fifo_queue.begin());
-        // put it in the end as this will be filled right now
         fifo_queue.push_back(way);
     }
 
