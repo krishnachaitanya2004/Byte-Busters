@@ -2,13 +2,17 @@
 
 const int R_MAX = 100;
 const int SCORE_MAX = 31;
-int O = 0;
+const int BAD_SCORE = 5;
+static int O = 0;
 vector<uint64_t> RR;
+vector<uint64_t> delay_queue;
+const int delay_queue_size = 23;
 const int maxsize = 64;
-int r_count = 0;
-int offsets[26] = {1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 16, 18, 20, 24, 25, 27, 30, 32, 36, 40, 45, 48, 50, 54, 60};
-int scores[26] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-int i_count = 0;
+static int r_count = 0;
+const int offsets[26] = {1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 16, 18, 20, 24, 25, 27, 30, 32, 36, 40, 45, 48, 50, 54, 64};
+static int scores[26] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+static int i_count = 0;
+static bool pref_on = true;
 
 void CACHE::l2c_prefetcher_initialize()
 {
@@ -26,8 +30,37 @@ uint32_t CACHE::l2c_prefetcher_operate(uint64_t addr, uint64_t ip, uint8_t cache
     i_count = 0;
     r_count++;
   }
-  // 1) Reset after a learning phase
-  if (r_count == R_MAX || *max_element(scores, scores + 26) >= SCORE_MAX)
+  // // 1) Reset after a learning phase
+  // if (r_count == R_MAX || *max_element(scores, scores + 26) >= SCORE_MAX)
+  // {
+  //   r_count = 0;
+  //   O = distance(scores, max_element(scores, scores + 26));
+  //   for (int i = 0; i < 26; i++)
+  //   {
+  //     scores[i] = 0;
+  //   }
+  // }
+
+  // Switching on/off Prefetcher
+  if (r_count == R_MAX)
+  {
+    if (*max_element(scores, scores + 26) <= BAD_SCORE)
+    {
+      pref_on = false;
+      // r_count = 0;
+    }
+    else
+    {
+      r_count = 0;
+      O = distance(scores, max_element(scores, scores + 26));
+      for (int i = 0; i < 26; i++)
+      {
+        scores[i] = 0;
+      }
+      pref_on = true;
+    }
+  }
+  else if (*max_element(scores, scores + 26) >= SCORE_MAX)
   {
     r_count = 0;
     O = distance(scores, max_element(scores, scores + 26));
@@ -35,38 +68,151 @@ uint32_t CACHE::l2c_prefetcher_operate(uint64_t addr, uint64_t ip, uint8_t cache
     {
       scores[i] = 0;
     }
+    pref_on = true;
   }
 
-  // Adding address into Recent Request Table
-  if (RR.size() < maxsize)
+  if (pref_on)
   {
-    RR.push_back(addr);
+    uint64_t pf_addr = ((addr >> LOG2_BLOCK_SIZE) + offsets[O]) << LOG2_BLOCK_SIZE;
+
+    // DELAY QUEUE
+    // Adding address into delay queue when address is prefetched once from somewhere
+    if (block[get_set(addr)][get_way(addr, get_set(addr))].prefetch || cache_hit == 0)
+    {
+      if (delay_queue.size() < delay_queue_size)
+      {
+        delay_queue.push_back(addr);
+      }
+      else
+      {
+        // Adding into RR table
+        uint64_t rr_addr = delay_queue[0];
+        delay_queue.erase(delay_queue.begin());
+        if (find(RR.begin(), RR.end(), rr_addr) == RR.end())
+        {
+          if (RR.size() < maxsize)
+          {
+            RR.push_back(rr_addr);
+          }
+          else
+          {
+            RR.erase(RR.begin());
+            RR.push_back(rr_addr);
+          }
+        }
+        delay_queue.push_back(addr);
+      }
+    }
+
+    // Finding address - offset in RR
+    uint64_t ff_addr = ((addr >> LOG2_BLOCK_SIZE) - offsets[i_count]) << LOG2_BLOCK_SIZE;
+    vector<uint64_t>::iterator it = std::find(RR.begin(), RR.end(), ff_addr);
+    if (it != RR.end())
+    {
+      scores[i_count]++;
+    }
+
+    DP(if (warmup_complete[cpu]) {
+      cout << "[" << NAME << "] " << __func__ << hex << " base_cl: " << (addr >> LOG2_BLOCK_SIZE);
+      cout << " pf_cl: " << (pf_addr >> LOG2_BLOCK_SIZE) << " ip: " << ip << " cache_hit: " << +cache_hit
+           << " type: " << +type << endl;
+    });
+
+    i_count++;
+
+    // Adding addr - O if addr is PREFETCHed from somewhere
+    // if ((type == PREFETCH && cache_hit == 1 || cache_hit == 0) && pf_addr >> LOG2_BLOCK_SIZE == addr >> LOG2_BLOCK_SIZE)
+    if (type == PREFETCH)
+    {
+      uint64_t f_addr = ((addr >> LOG2_BLOCK_SIZE) - offsets[O]) << LOG2_BLOCK_SIZE;
+      if (find(RR.begin(), RR.end(), f_addr) == RR.end())
+      {
+        if (RR.size() < maxsize)
+        {
+          RR.push_back(f_addr);
+        }
+        else
+        {
+          RR.erase(RR.begin());
+          RR.push_back(f_addr);
+        }
+      }
+    }
+
+    if ((block[get_set(addr)][get_way(addr, get_set(addr))].prefetch && cache_hit == 1 || cache_hit == 0) && pf_addr >> LOG2_PAGE_SIZE == addr >> LOG2_PAGE_SIZE)
+    {
+      prefetch_line(ip, addr, pf_addr, FILL_L2, 0);
+    }
   }
   else
   {
-    RR.erase(RR.begin());
-    RR.push_back(addr);
+    // Writing code for prefetcher is off
+    uint64_t pf_addr = ((addr >> LOG2_BLOCK_SIZE) + offsets[O]) << LOG2_BLOCK_SIZE;
+
+    // DELAY QUEUE
+    // Adding address into delay queue when address is prefetched once from somewhere
+    if (block[get_set(addr)][get_way(addr, get_set(addr))].prefetch || cache_hit == 0)
+    {
+      if (delay_queue.size() < delay_queue_size)
+      {
+        delay_queue.push_back(addr);
+      }
+      else
+      {
+        // Adding into RR table
+        uint64_t rr_addr = delay_queue[0];
+        delay_queue.erase(delay_queue.begin());
+        if (find(RR.begin(), RR.end(), rr_addr) == RR.end())
+        {
+          if (RR.size() < maxsize)
+          {
+            RR.push_back(rr_addr);
+          }
+          else
+          {
+            RR.erase(RR.begin());
+            RR.push_back(rr_addr);
+          }
+        }
+        delay_queue.push_back(addr);
+      }
+    }
+
+    // Finding address - offset in RR
+    uint64_t ff_addr = ((addr >> LOG2_BLOCK_SIZE) - offsets[i_count]) << LOG2_BLOCK_SIZE;
+    vector<uint64_t>::iterator it = std::find(RR.begin(), RR.end(), ff_addr);
+    if (it != RR.end())
+    {
+      scores[i_count]++;
+    }
+
+    DP(if (warmup_complete[cpu]) {
+      cout << "[" << NAME << "] " << __func__ << hex << " base_cl: " << (addr >> LOG2_BLOCK_SIZE);
+      cout << " pf_cl: " << (pf_addr >> LOG2_BLOCK_SIZE) << " ip: " << ip << " cache_hit: " << +cache_hit
+           << " type: " << +type << endl;
+    });
+
+    i_count++;
+
+    // Adding addr - O if addr is PREFETCHed from somewhere
+    // if ((type == PREFETCH && cache_hit == 1 || cache_hit == 0) && pf_addr >> LOG2_BLOCK_SIZE == addr >> LOG2_BLOCK_SIZE)
+    if (type == PREFETCH)
+    {
+      uint64_t f_addr = ((addr >> LOG2_BLOCK_SIZE) - offsets[O]) << LOG2_BLOCK_SIZE;
+      if (find(RR.begin(), RR.end(), f_addr) == RR.end())
+      {
+        if (RR.size() < maxsize)
+        {
+          RR.push_back(f_addr);
+        }
+        else
+        {
+          RR.erase(RR.begin());
+          RR.push_back(f_addr);
+        }
+      }
+    }
   }
-
-  // Finding address - offset in RR
-  uint64_t ff_addr = ((addr >> LOG2_BLOCK_SIZE) - offsets[i_count]) << LOG2_BLOCK_SIZE;
-  vector<uint64_t>::iterator it = std::find(RR.begin(), RR.end(), ff_addr);
-  if (it != RR.end())
-  {
-    scores[i_count]++;
-  }
-
-  uint64_t pf_addr = ((addr >> LOG2_BLOCK_SIZE) + offsets[O]) << LOG2_BLOCK_SIZE;
-
-  DP(if (warmup_complete[cpu]) {
-    cout << "[" << NAME << "] " << __func__ << hex << " base_cl: " << (addr >> LOG2_BLOCK_SIZE);
-    cout << " pf_cl: " << (pf_addr >> LOG2_BLOCK_SIZE) << " ip: " << ip << " cache_hit: " << +cache_hit
-         << " type: " << +type << endl;
-  });
-
-  prefetch_line(ip, addr, pf_addr, FILL_L2, 0);
-  i_count++;
-
   return metadata_in;
 }
 
